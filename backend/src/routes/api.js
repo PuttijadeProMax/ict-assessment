@@ -28,12 +28,13 @@ const parse = (schema, value) => {
   return result.data;
 };
 const roles = (...values) => allowRoles(...values);
-const publicAppUrl = () =>
+const publicAppUrl = (req) =>
   (process.env.PUBLIC_APP_URL ||
+    (req ? `${req.protocol}://${req.get("host")}` : "") ||
     process.env.FRONTEND_URL ||
     "http://localhost:5173").replace(/\/+$/, "");
-const publicAssessmentUrl = (token) =>
-  `${publicAppUrl()}/assessment/${token}`;
+const publicAssessmentUrl = (token, req) =>
+  `${publicAppUrl(req)}/assessment/${token}`;
 const userInput = z.object({
   fullName: z.string().trim().min(2).max(150),
   email: z.string().email().max(150),
@@ -574,7 +575,7 @@ router.post(
     });
     ok(res, {
       ...updated,
-      publicUrl: publicAssessmentUrl(updated.public_token),
+      publicUrl: publicAssessmentUrl(updated.public_token, req),
     });
   }),
 );

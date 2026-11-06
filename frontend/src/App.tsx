@@ -45,7 +45,9 @@ import {
 import "./App.css";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? "/api" : "http://localhost:5000/api"),
 });
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("ict-token");
@@ -588,7 +590,12 @@ function AssessmentEditor() {
         .then((r) => {
           setAssessment(r.data.data);
           setQuestions(r.data.data.questions || []);
-          setQrUrl(r.data.data.publicUrl || "");
+          setQrUrl(
+            r.data.data.publicUrl ||
+              (r.data.data.publicToken
+                ? `${window.location.origin}/assessment/${r.data.data.publicToken}`
+                : ""),
+          );
         })
         .catch(() => setMessage("เปิดแบบประเมินไม่สำเร็จ"));
   }, [id]);

@@ -1,19 +1,31 @@
 services:
   - type: web
-    name: ict-assessment-api
+    name: ict-assessment
     runtime: node
-    rootDir: backend
-    buildCommand: npm ci && npm run db:generate
-    startCommand: npm start
+    plan: free
+    region: singapore
+    buildCommand: npm --prefix frontend ci && npm --prefix frontend run build:render && npm --prefix backend ci && npm --prefix backend run db:generate && npm --prefix backend run db:deploy
+    startCommand: npm --prefix backend run db:bootstrap && npm --prefix backend start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: ict-assessment-db
+          property: connectionString
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
       - key: FRONTEND_URL
-        sync: false
+        value: ""
       - key: PUBLIC_APP_URL
+        value: ""
+      - key: INITIAL_ADMIN_EMAIL
         sync: false
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false
+databases:
+  - name: ict-assessment-db
+    databaseName: ict_assessment
+    plan: free
+    region: singapore
