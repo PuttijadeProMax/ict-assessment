@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm --prefix frontend ci && npm --prefix frontend run build:render && npm --prefix backend ci && npm --prefix backend run db:generate && npm --prefix backend run db:deploy
+    buildCommand: npm --prefix frontend ci --include=dev && npm --prefix frontend run build:render && npm --prefix backend ci --include=dev && npm --prefix backend run db:generate && npm --prefix backend run db:deploy
     startCommand: npm --prefix backend run db:bootstrap && npm --prefix backend start
     healthCheckPath: /api/health
     envVars:
